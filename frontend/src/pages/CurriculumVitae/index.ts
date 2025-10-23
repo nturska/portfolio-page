@@ -1,0 +1,1 @@
+export { CurriculumVitae } from "./CurriculumVitae";
