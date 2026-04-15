@@ -12,7 +12,7 @@ export const ProjectCard: FC<Project> = ({ title, description, image, link }) =>
         <h2 className='card-title'>{title}</h2>
         <p>{description}</p>
         <div className='card-actions justify-end'>
-          <a href={link} className='link link-hover text-shadow-sm'>
+          <a href={'/projects' + {link}} className='link link-hover text-shadow-sm'>
             See more
           </a>
         </div>

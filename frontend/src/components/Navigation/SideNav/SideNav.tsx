@@ -33,7 +33,8 @@ export const SideNav: FC<SideNavProps> = ({ isOpen, isMobile }) => {
           Contact me
         </a>
       </li>
-      <li>
+      {/* TODO: Add about me page*/}
+      {/* <li>
         <a href='/about-me'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -52,7 +53,7 @@ export const SideNav: FC<SideNavProps> = ({ isOpen, isMobile }) => {
           </svg>
           About me (Personal)
         </a>
-      </li>
+      </li> */}
       <li>
         <a href='/about-this-website'>
           <svg
