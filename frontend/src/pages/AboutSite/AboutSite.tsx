@@ -23,9 +23,8 @@ export const AboutSite: FC = () => {
         </div>
         <input type='radio' name='about_website_tabs' className='tab' aria-label='Hosting' />
         <div className='tab-content bg-base-100 border-base-300 p-6'>
-          This website is hosted on GitHub Pages, a static site hosting service that takes advantage
-          of GitHub's global content delivery network (CDN) to ensure fast and reliable access to
-          the site from anywhere in the world.
+          This website is hosted on CloudFlare Pages, a static site hosting service that is directly connected to 
+          GitHub repository to deploy the website automatically when changes are pushed to the repository.
         </div>
       </div>
     </PageContent>

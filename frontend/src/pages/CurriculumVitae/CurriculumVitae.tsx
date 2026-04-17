@@ -2,10 +2,7 @@ import type { FC } from 'react';
 
 import { PageContent } from '../../components';
 import { WorkExperience } from './components/WorkExperience';
-import { profile } from '../../assets';
-import pmp_cert from '../../assets/pdfs/Natalia-Turska-pmp.pdf';
-import cv from '../../assets/pdfs/Natalia-Turska_CV.pdf';
-import ds_cert from '../../assets/pdfs/Natalia-Turska-ds.pdf';
+import { profile, cv, pmp_cert, ds_cert, cursor_cert, py_cert } from '../../assets';
 
 export const CurriculumVitae: FC = () => {
   return (
@@ -60,11 +57,13 @@ export const CurriculumVitae: FC = () => {
           <p>
             Bachelor's Degree in Practical Computer Science <em>- 2024</em>
           </p>
+          <p>Thesis on a mobile platform for pet-care services utilizing beacon technology for real-time treacking.</p>
           <h2 className='font-bold m-2'>Technical University of Warsaw</h2>
           <p>
             Master's Degree in Applied Computer Science <em>- Expected in 2026</em>
           </p>
           <p>Specialization in Computer Science in Business</p>
+          <p>Thesis on a real-time Multi-Camera Multi-Object Tracking system with spatial map integration.</p>
         </div>
       </div>
       <div className='collapse border border-base-300 m-2 shadow-sm'>
@@ -76,7 +75,7 @@ export const CurriculumVitae: FC = () => {
               <strong>Programming Languages:</strong> JavaScript, TypeScript, Python
             </li>
             <li>
-              <strong>Frameworks:</strong> React, Node.js, Express, SpringBoot
+              <strong>Frameworks:</strong> React, Node.js, Express, Vue.js, Angular
             </li>
             <li>
               <strong>Databases:</strong> MongoDB, PostgreSQL
@@ -87,20 +86,25 @@ export const CurriculumVitae: FC = () => {
             <li>
               <strong>Certificates:</strong> C1 Advanced English,{' '}
               <a href={pmp_cert} download='Turska_Project-Management-Principles'>
-                Project Management Principles
+                Project Management Principles,
               </a>
-              <a href={ds_cert} download='Turska_Project-Management-Principles'>
-                Google Digital Skills
+              {' '}
+              <a href={ds_cert} download='Turska_Google_Digital_Skills'>
+                Google Digital Skills,
               </a>
-              <a href={pmp_cert} download='Turska_Project-Management-Principles'>
-                Understanding TypesScript
+              {' '}
+              <a href={pmp_cert} download='Turska_Understanding_TypesScript'>
+                Understanding TypesScript,
               </a>
-              <a href={pmp_cert} download='Turska_Project-Management-Principles'>
-                The Complete Data Structures and Algorithms Course in Python
+              {' '}
+              <a href={py_cert} download='Turska_Python_Data_Structures'>
+                The Complete Data Structures and Algorithms Course in Python,
               </a>
-              {/* <a href={pmp_cert} download='Turska_Project-Management-Principles'>
-                Google Cloud Associate Cloud Engineer
-              </a> */}
+              {' '}
+              <a href={cursor_cert} download='Turska_Cursor'>
+                Cursor AI,
+              </a>
+              {' '}
             </li>
             <li>
               <strong>Other Skills:</strong> Agile Methodologies, CI/CD, Unit Testing
