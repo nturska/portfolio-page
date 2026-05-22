@@ -93,9 +93,9 @@ export const CurriculumVitae: FC = () => {
                 Google Digital Skills,
               </a>
               {' '}
-              <a href={pmp_cert} download='Turska_Understanding_TypesScript'>
+              {/* <a href={pmp_cert} download='Turska_Understanding_TypesScript'>
                 Understanding TypesScript,
-              </a>
+              </a> */}
               {' '}
               <a href={py_cert} download='Turska_Python_Data_Structures'>
                 The Complete Data Structures and Algorithms Course in Python,
