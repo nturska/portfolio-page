@@ -1,1 +1,0 @@
-export { CurriculumVitae } from "./CurriculumVitae";
