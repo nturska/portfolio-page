@@ -13,8 +13,8 @@ const projects: Project[] = [
     description:
       "Pełny ekosystem do śledzenia nawyków. Panel analityczny w Next.js oraz aplikacja mobilna z płynnymi gestami, zasilane wspólnym API napisanym w FastAPI.",
     tags: ["Next.js", "React Native", "Expo", "FastAPI", "PostgreSQL"],
-    liveUrl: "https://twoj-projekt.vercel.app",
-    githubUrl: "https://github.com/twoj-login/habit-tracker",
+    liveUrl: "/dashboard",
+    githubUrl: "https://github.com/nturska/habit-tracker",
     badge: "Flagship",
   },
   {

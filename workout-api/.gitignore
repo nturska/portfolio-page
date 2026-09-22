@@ -1,0 +1,43 @@
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Bytecode / caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.cache/
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+
+# Local SQLite database
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
