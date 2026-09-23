@@ -1,8 +1,6 @@
 import { Workout, Stats } from "@/types/workouts";
 import DashboardClient from "./DashboardClient";
 
-export const dynamic = "force-dynamic";
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 async function loadDashboardData(): Promise<{
@@ -26,7 +24,5 @@ async function loadDashboardData(): Promise<{
 export default async function DashboardPage() {
   const { workouts, stats } = await loadDashboardData();
 
-  return (
-    <DashboardClient initialWorkouts={workouts} initialStats={stats} />
-  );
+  return <DashboardClient initialWorkouts={workouts} initialStats={stats} />;
 }
