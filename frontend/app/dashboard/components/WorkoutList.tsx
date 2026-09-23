@@ -20,8 +20,8 @@ export default function WorkoutList({
           <span className="loading loading-spinner loading-md"></span>
         </div>
       ) : workouts.length === 0 ? (
-        <div className="card bg-base-100 p-8 text-center text-base-content/60">
-          Brak zapisanych treningów. Dodaj pierwszy z formularza obok!
+        <div className="card bg-base-100 p-8 text-center text-base-content/60 border border-base-200">
+          Brak zapisanych treningów. Skomponuj pierwszy zestaw po lewej stronie!
         </div>
       ) : (
         workouts.map((w) => (
@@ -46,14 +46,19 @@ export default function WorkoutList({
               <div className="divider my-1"></div>
 
               <div className="space-y-1">
-                {w.exercises.map((ex, i) => (
+                {w.exercises.map((s, i) => (
                   <div
                     key={i}
-                    className="flex justify-between text-sm py-1 bg-base-200/50 px-3 rounded"
+                    className="flex justify-between items-center text-sm py-1.5 bg-base-200/50 px-3 rounded"
                   >
-                    <span className="font-medium">{ex.exercise_name}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{s.exercise.name}</span>
+                      <span className="badge badge-outline badge-xs uppercase font-mono">
+                        {s.exercise.category}
+                      </span>
+                    </div>
                     <span className="badge badge-sm badge-neutral">
-                      {ex.reps} powt. × {ex.weight_kg} kg
+                      {s.reps} powt. × {s.weight_kg} kg
                     </span>
                   </div>
                 ))}

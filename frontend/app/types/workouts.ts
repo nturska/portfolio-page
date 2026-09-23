@@ -1,8 +1,14 @@
+export interface Exercise {
+  id: number;
+  name: string;
+  category: "abs" | "legs" | "back" | "arms" | "chest" | string;
+}
+
 export interface ExerciseSet {
   id?: number;
-  exercise_name: string;
   reps: number;
   weight_kg: number;
+  exercise: Exercise;
 }
 
 export interface Workout {

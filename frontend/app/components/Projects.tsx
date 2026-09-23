@@ -9,22 +9,22 @@ interface Project {
 
 const projects: Project[] = [
   {
-    title: "Habit Tracker Ecosystem (Web + Mobile)",
+    title: "Habit Tracker Ecosystem",
     description:
       "Pełny ekosystem do śledzenia nawyków. Panel analityczny w Next.js oraz aplikacja mobilna z płynnymi gestami, zasilane wspólnym API napisanym w FastAPI.",
-    tags: ["Next.js", "React Native", "Expo", "FastAPI", "PostgreSQL"],
+    tags: ["Next.js", "FastAPI", "PostgreSQL"],
     liveUrl: "/dashboard",
     githubUrl: "https://github.com/nturska/habit-tracker",
     badge: "Flagship",
   },
-  {
-    title: "Headless E-Commerce Store",
-    description:
-      "Nowoczesny sklep z filtrowaniem po stronie klienta, Server-Side Rendering pod kątem SEO oraz koszykiem zarządzanym przez Zustand.",
-    tags: ["React", "Next.js", "Tailwind CSS", "Zustand"],
-    liveUrl: "https://twoj-sklep.vercel.app",
-    githubUrl: "https://github.com/twoj-login/next-ecommerce",
-  },
+  // {
+  //   title: "Headless E-Commerce Store",
+  //   description:
+  //     "Nowoczesny sklep z filtrowaniem po stronie klienta, Server-Side Rendering pod kątem SEO oraz koszykiem zarządzanym przez Zustand.",
+  //   tags: ["React", "Next.js", "Tailwind CSS", "Zustand"],
+  //   liveUrl: "https://twoj-sklep.vercel.app",
+  //   githubUrl: "https://github.com/twoj-login/next-ecommerce",
+  // },
 ];
 
 export default function Projects() {
@@ -35,9 +35,6 @@ export default function Projects() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Wybrane projekty
           </h2>
-          <p className="text-base-content/70">
-            Aplikacje demonstrujące pracę z webem, mobilem i backendem.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
