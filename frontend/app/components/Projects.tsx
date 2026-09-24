@@ -14,7 +14,7 @@ const projects: Project[] = [
       "Aplikacja do śledzenia nawyków. Panel analityczny w Next.js, zasilany API napisanym w FastAPI.",
     tags: ["Next.js", "FastAPI", "PostgreSQL"],
     liveUrl: "/dashboard",
-    githubUrl: "https://github.com/nturska/habit-tracker",
+    githubUrl: "https://github.com/nturska/portfolio-page",
     badge: "Flagship",
   },
   // {

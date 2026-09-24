@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Workout, Stats, Exercise } from "@/types/workouts";
 import StatsCards from "@/dashboard/components/StatsCards";
@@ -8,52 +8,88 @@ import ExerciseForm from "@/dashboard/components/ExerciseForm";
 import WorkoutForm from "@/dashboard/components/WorkoutForm";
 import WorkoutList from "@/dashboard/components/WorkoutList";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+).replace(/\/$/, "");
 
-type DashboardClientProps = {
-  initialWorkouts: Workout[];
-  initialStats: Stats | null;
-  initialExercises: Exercise[];
-};
+async function loadDashboard(): Promise<{
+  workouts: Workout[];
+  stats: Stats;
+  exercises: Exercise[];
+}> {
+  const [workoutsRes, statsRes, exercisesRes] = await Promise.all([
+    fetch(`${API_URL}/workouts`),
+    fetch(`${API_URL}/stats`),
+    fetch(`${API_URL}/exercises`),
+  ]);
 
-export default function DashboardClient({
-  initialWorkouts,
-  initialStats,
-  initialExercises,
-}: DashboardClientProps) {
-  const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts);
-  const [exercises, setExercises] = useState<Exercise[]>(initialExercises);
-  const [stats, setStats] = useState<Stats | null>(initialStats);
-  const [loading, setLoading] = useState(false);
+  if (!workoutsRes.ok || !statsRes.ok || !exercisesRes.ok) {
+    throw new Error(
+      `API error: workouts=${workoutsRes.status} stats=${statsRes.status} exercises=${exercisesRes.status}`,
+    );
+  }
+
+  const workouts = (await workoutsRes.json()) as Workout[];
+  const stats = (await statsRes.json()) as Stats;
+  const exercises = (await exercisesRes.json()) as Exercise[];
+  return { workouts, stats, exercises };
+}
+
+export default function DashboardClient() {
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const [workoutsRes, statsRes, exercisesRes] = await Promise.all([
-        fetch(`${API_URL}/workouts`),
-        fetch(`${API_URL}/stats`),
-        fetch(`${API_URL}/exercises`),
-      ]);
-
-      if (!workoutsRes.ok || !statsRes.ok || !exercisesRes.ok) {
-        throw new Error(
-          `API error: workouts=${workoutsRes.status} stats=${statsRes.status} exercises=${exercisesRes.status}`,
-        );
-      }
-
-      const workoutsData = (await workoutsRes.json()) as Workout[];
-      const statsData = (await statsRes.json()) as Stats;
-      const exercisesData = (await exercisesRes.json()) as Exercise[];
-
-      setExercises(exercisesData);
-      setWorkouts(workoutsData);
-      setStats(statsData);
-    } catch (error) {
-      console.error("Błąd pobierania danych:", error);
+      const data = await loadDashboard();
+      setWorkouts(data.workouts);
+      setStats(data.stats);
+      setExercises(data.exercises);
+    } catch (err) {
+      console.error("Błąd pobierania danych:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Nie udało się połączyć z API (cold start Rendera?)",
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const data = await loadDashboard();
+        if (cancelled) return;
+        setWorkouts(data.workouts);
+        setStats(data.stats);
+        setExercises(data.exercises);
+        setError(null);
+      } catch (err) {
+        if (cancelled) return;
+        console.error("Błąd pobierania danych:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Nie udało się połączyć z API (cold start Rendera?)",
+        );
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleCreateExercise = async (
     name: string,
@@ -70,8 +106,8 @@ export default function DashboardClient({
         setExercises((prev) => [...prev, created]);
         return created;
       }
-    } catch (error) {
-      console.error("Błąd tworzenia ćwiczenia:", error);
+    } catch (err) {
+      console.error("Błąd tworzenia ćwiczenia:", err);
     }
     return null;
   };
@@ -97,8 +133,8 @@ export default function DashboardClient({
       if (res.ok) {
         await fetchData();
       }
-    } catch (error) {
-      console.error("Błąd zapisu treningu:", error);
+    } catch (err) {
+      console.error("Błąd zapisu treningu:", err);
     }
   };
 
@@ -110,8 +146,8 @@ export default function DashboardClient({
       if (res.ok) {
         await fetchData();
       }
-    } catch (error) {
-      console.error("Błąd usuwania:", error);
+    } catch (err) {
+      console.error("Błąd usuwania:", err);
     }
   };
 
@@ -129,6 +165,18 @@ export default function DashboardClient({
             ← Powrót do Portfolio
           </Link>
         </div>
+
+        {error && (
+          <div className="alert alert-warning">
+            <span>
+              {error}. Na darmowym Renderze pierwsze uruchomienie może zająć ok.
+              minutę.
+            </span>
+            <button type="button" className="btn btn-sm" onClick={fetchData}>
+              Spróbuj ponownie
+            </button>
+          </div>
+        )}
 
         <StatsCards stats={stats} />
 
