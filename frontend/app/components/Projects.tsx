@@ -11,7 +11,7 @@ const projects: Project[] = [
   {
     title: "Habit Tracker Ecosystem",
     description:
-      "Pełny ekosystem do śledzenia nawyków. Panel analityczny w Next.js oraz aplikacja mobilna z płynnymi gestami, zasilane wspólnym API napisanym w FastAPI.",
+      "Aplikacja do śledzenia nawyków. Panel analityczny w Next.js, zasilany API napisanym w FastAPI.",
     tags: ["Next.js", "FastAPI", "PostgreSQL"],
     liveUrl: "/dashboard",
     githubUrl: "https://github.com/nturska/habit-tracker",

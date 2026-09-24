@@ -4,8 +4,8 @@ export default function Contact() {
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">Porozmawiajmy</h2>
         <p className="text-base-content/70 mb-8">
-          Szukam możliwości pracy jako Frontend Developer przy projektach React,
-          Next.js i React Native.
+          Szukam możliwości pracy jako Frontend Developer przy projektach React
+          i Next.js.
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
