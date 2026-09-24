@@ -17,14 +17,12 @@ const projects: Project[] = [
     githubUrl: "https://github.com/nturska/portfolio-page",
     badge: "Flagship",
   },
-  // {
-  //   title: "Headless E-Commerce Store",
-  //   description:
-  //     "Nowoczesny sklep z filtrowaniem po stronie klienta, Server-Side Rendering pod kątem SEO oraz koszykiem zarządzanym przez Zustand.",
-  //   tags: ["React", "Next.js", "Tailwind CSS", "Zustand"],
-  //   liveUrl: "https://twoj-sklep.vercel.app",
-  //   githubUrl: "https://github.com/twoj-login/next-ecommerce",
-  // },
+  {
+    title: "PDF Q&A",
+    description: "Aplikacja wykorzystująca LLM do pytania o treść PDF-a.",
+    tags: ["React", "Python", "FastAPI", "LangChain"],
+    githubUrl: "https://github.com/nturska/AI-Powered-Document-Q-A-App",
+  },
 ];
 
 export default function Projects() {
@@ -76,7 +74,7 @@ export default function Projects() {
                   >
                     GitHub
                   </a>
-                  {project.liveUrl && (
+                  {project?.liveUrl && (
                     <a
                       href={project.liveUrl}
                       target="_blank"

@@ -8,9 +8,7 @@ import ExerciseForm from "@/dashboard/components/ExerciseForm";
 import WorkoutForm from "@/dashboard/components/WorkoutForm";
 import WorkoutList from "@/dashboard/components/WorkoutList";
 
-const API_URL = (
-  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
-).replace(/\/$/, "");
+const API_URL = "http://127.0.0.1:8000".replace(/\/$/, "");
 
 async function loadDashboard(): Promise<{
   workouts: Workout[];

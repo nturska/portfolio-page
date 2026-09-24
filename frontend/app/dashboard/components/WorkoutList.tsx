@@ -1,9 +1,60 @@
-import { Workout } from "@/types/workouts";
+import type { ExerciseSet, Workout } from "@/types/workouts";
 
-interface WorkoutListProps {
+type WorkoutListProps = {
   workouts: Workout[];
   loading: boolean;
   onDelete: (id: number) => void;
+};
+
+type GroupedExercise = {
+  exerciseId: number;
+  name: string;
+  category: string;
+  setCount: number;
+  sets: ExerciseSet[];
+};
+
+function groupSetsByExercise(sets: ExerciseSet[]): GroupedExercise[] {
+  const groups = new Map<number, GroupedExercise>();
+
+  for (const set of sets) {
+    const exerciseId = set.exercise.id;
+    const existing = groups.get(exerciseId);
+
+    if (existing) {
+      existing.setCount += 1;
+      existing.sets.push(set);
+    } else {
+      groups.set(exerciseId, {
+        exerciseId,
+        name: set.exercise.name,
+        category: set.exercise.category,
+        setCount: 1,
+        sets: [set],
+      });
+    }
+  }
+
+  return Array.from(groups.values());
+}
+
+function formatLoadSummary(sets: ExerciseSet[]): string {
+  const unique = new Set(
+    sets.map((s) => `${s.reps}×${s.weight_kg}`),
+  );
+
+  if (unique.size === 1) {
+    const first = sets[0];
+    return `${first.reps} powt. × ${first.weight_kg} kg`;
+  }
+
+  return sets.map((s) => `${s.reps}×${s.weight_kg}kg`).join(", ");
+}
+
+function setCountLabel(count: number): string {
+  if (count === 1) return "1 seria";
+  if (count >= 2 && count <= 4) return `${count} serie`;
+  return `${count} serii`;
 }
 
 export default function WorkoutList({
@@ -46,19 +97,22 @@ export default function WorkoutList({
               <div className="divider my-1"></div>
 
               <div className="space-y-1">
-                {w.exercises.map((s, i) => (
+                {groupSetsByExercise(w.exercises).map((group) => (
                   <div
-                    key={i}
-                    className="flex justify-between items-center text-sm py-1.5 bg-base-200/50 px-3 rounded"
+                    key={group.exerciseId}
+                    className="flex justify-between items-center text-sm py-1.5 bg-base-200/50 px-3 rounded gap-2"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{s.exercise.name}</span>
-                      <span className="badge badge-outline badge-xs uppercase font-mono">
-                        {s.exercise.category}
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-medium truncate">{group.name}</span>
+                      <span className="badge badge-outline badge-xs uppercase font-mono shrink-0">
+                        {group.category}
+                      </span>
+                      <span className="badge badge-ghost badge-xs shrink-0">
+                        {setCountLabel(group.setCount)}
                       </span>
                     </div>
-                    <span className="badge badge-sm badge-neutral">
-                      {s.reps} powt. × {s.weight_kg} kg
+                    <span className="badge badge-sm badge-neutral shrink-0 max-w-[50%] truncate">
+                      {formatLoadSummary(group.sets)}
                     </span>
                   </div>
                 ))}
