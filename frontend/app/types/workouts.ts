@@ -1,7 +1,7 @@
 export interface Exercise {
   id: number;
   name: string;
-  category: "abs" | "legs" | "back" | "arms" | "chest" | string;
+  category: "abs" | "legs" | "back" | "arms" | "chest" | "glutes" | string;
 }
 
 export interface ExerciseSet {
