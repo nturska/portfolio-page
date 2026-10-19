@@ -44,7 +44,6 @@ export default function DashboardClient() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    // Skeletons only while there is nothing to show yet; refreshes keep stale data visible.
     if (stats === null) setLoading(true);
     setError(null);
     try {
@@ -161,6 +160,11 @@ export default function DashboardClient() {
             <h1 className="text-2xl font-bold">Workout Analytics Dashboard</h1>
             <p className="text-sm text-base-content/70">
               Next.js połączony z FastAPI
+            </p>
+            <p className="text-sm text-secondary/70">
+              <span className="font-bold">Uwaga:</span> Aplikacja jest
+              obsługiwana na darmowym Renderze, więc pierwsze uruchomienie może
+              zająć ok. 1 minutę.
             </p>
           </div>
           <div className="flex items-center gap-2">
