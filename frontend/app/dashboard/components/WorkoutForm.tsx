@@ -1,17 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { Exercise } from "@/types/workouts";
-
-type SetRow = {
-  reps: number;
-  weight_kg: number;
-};
-
-type ExerciseBlock = {
-  exercise_id: number;
-  sets: SetRow[];
-};
+import { FieldError } from "@/components/ui/FieldError";
+import { useTouchedFields } from "@/lib/hooks/useTouchedFields";
+import {
+  hasWorkoutErrors,
+  validateWorkout,
+  type ExerciseBlock,
+  type SetRow,
+} from "@/dashboard/lib/workoutValidation";
 
 type FlatSet = {
   exercise_id: number;
@@ -38,6 +36,14 @@ export default function WorkoutForm({
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState<ExerciseBlock[]>([emptyExerciseBlock()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { touch, shouldShowError, markSubmitted, reset } = useTouchedFields();
+  const fieldId = useId();
+
+  const errors = validateWorkout(title, blocks);
+  const visibleError = (key: string, message?: string): string | undefined =>
+    shouldShowError(key) ? message : undefined;
+  const errorId = (key: string): string => `${fieldId}-${key}-error`;
+  const titleError = visibleError("title", errors.title);
 
   const handleAddExercise = () => {
     setBlocks((prev) => [...prev, emptyExerciseBlock()]);
@@ -110,22 +116,17 @@ export default function WorkoutForm({
       })),
     );
 
-  const isValid = blocks.every(
-    (block) =>
-      block.exercise_id > 0 &&
-      block.sets.length > 0 &&
-      block.sets.every((set) => set.reps > 0),
-  );
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !isValid) return;
+    markSubmitted();
+    if (hasWorkoutErrors(errors)) return;
 
     try {
       setIsSubmitting(true);
       await onSubmitWorkout({ title, sets: flattenSets(blocks) });
       setTitle("");
       setBlocks([emptyExerciseBlock()]);
+      reset();
     } finally {
       setIsSubmitting(false);
     }
@@ -136,19 +137,27 @@ export default function WorkoutForm({
       <div className="card-body p-5">
         <h2 className="card-title text-lg font-bold">Nowa sesja treningowa</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-base-content/70">
+            <label
+              htmlFor={`${fieldId}-title`}
+              className="text-xs font-semibold text-base-content/70"
+            >
               Nazwa sesji
             </label>
             <input
+              id={`${fieldId}-title`}
               type="text"
-              placeholder="np. Push Day, Trening nóg"
-              className="input input-bordered w-full input-sm mt-1"
+              placeholder="np. Trening nóg"
+              className={`input input-bordered w-full input-sm mt-1 ${titleError ? "input-error" : ""}`}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              onBlur={() => touch("title")}
+              aria-invalid={Boolean(titleError)}
+              aria-describedby={titleError ? errorId("title") : undefined}
               required
             />
+            <FieldError id={errorId("title")} message={titleError} />
           </div>
 
           <div className="space-y-4">
@@ -156,107 +165,167 @@ export default function WorkoutForm({
               Ćwiczenia i serie
             </label>
 
-            {blocks.map((block, blockIndex) => (
-              <div
-                key={blockIndex}
-                className="space-y-2 rounded-lg border border-base-200 bg-base-200/40 p-3"
-              >
-                <div className="flex gap-2 items-center">
-                  <select
-                    className="select select-bordered select-sm flex-1"
-                    value={block.exercise_id || ""}
-                    onChange={(e) =>
-                      handleExerciseChange(blockIndex, Number(e.target.value))
-                    }
-                    required
-                  >
-                    <option value="" disabled>
-                      Wybierz ćwiczenie…
-                    </option>
-                    {exercises.map((ex) => (
-                      <option key={ex.id} value={ex.id}>
-                        {ex.name} ({ex.category})
-                      </option>
-                    ))}
-                  </select>
+            {blocks.map((block, blockIndex) => {
+              const blockErrors = errors.blocks[blockIndex];
+              const exerciseKey = `b${blockIndex}-exercise`;
+              const exerciseError = visibleError(
+                exerciseKey,
+                exercises.length === 0
+                  ? "Najpierw dodaj ćwiczenie w formularzu powyżej."
+                  : blockErrors.exercise,
+              );
+
+              return (
+                <div
+                  key={blockIndex}
+                  className="space-y-2 rounded-lg border border-base-200 bg-base-200/40 p-3"
+                >
+                  <div>
+                    <div className="flex gap-2 items-center">
+                      <select
+                        className={`select select-bordered select-sm flex-1 ${exerciseError ? "select-error" : ""}`}
+                        value={block.exercise_id || ""}
+                        onChange={(e) =>
+                          handleExerciseChange(
+                            blockIndex,
+                            Number(e.target.value),
+                          )
+                        }
+                        onBlur={() => touch(exerciseKey)}
+                        aria-label={`Ćwiczenie ${blockIndex + 1}`}
+                        aria-invalid={Boolean(exerciseError)}
+                        aria-describedby={
+                          exerciseError ? errorId(exerciseKey) : undefined
+                        }
+                        required
+                      >
+                        <option value="" disabled>
+                          Wybierz ćwiczenie…
+                        </option>
+                        {exercises.map((ex) => (
+                          <option key={ex.id} value={ex.id}>
+                            {ex.name} ({ex.category})
+                          </option>
+                        ))}
+                      </select>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveExercise(blockIndex)}
+                        disabled={blocks.length === 1}
+                        className="btn btn-ghost btn-xs text-error px-1"
+                        title="Usuń ćwiczenie"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <FieldError
+                      id={errorId(exerciseKey)}
+                      message={exerciseError}
+                    />
+                  </div>
+
+                  {block.sets.map((set, setIndex) => {
+                    const setErrors = blockErrors.sets[setIndex];
+                    const repsKey = `b${blockIndex}-s${setIndex}-reps`;
+                    const weightKey = `b${blockIndex}-s${setIndex}-weight`;
+                    const repsError = visibleError(repsKey, setErrors.reps);
+                    const weightError = visibleError(
+                      weightKey,
+                      setErrors.weight_kg,
+                    );
+
+                    return (
+                      <div key={setIndex}>
+                        <div className="flex gap-2 items-center pl-1">
+                          <span className="text-xs text-base-content/50 w-10 shrink-0">
+                            Seria {setIndex + 1}
+                          </span>
+                          <div className="w-16">
+                            <input
+                              type="number"
+                              min="1"
+                              className={`input input-bordered input-xs w-full text-center ${repsError ? "input-error" : ""}`}
+                              placeholder="Powt."
+                              value={set.reps || ""}
+                              onChange={(e) =>
+                                handleSetChange(
+                                  blockIndex,
+                                  setIndex,
+                                  "reps",
+                                  Number(e.target.value),
+                                )
+                              }
+                              onBlur={() => touch(repsKey)}
+                              aria-label={`Powtórzenia, seria ${setIndex + 1}`}
+                              aria-invalid={Boolean(repsError)}
+                              aria-describedby={
+                                repsError ? errorId(repsKey) : undefined
+                              }
+                              required
+                            />
+                          </div>
+                          <div className="w-20">
+                            <input
+                              type="number"
+                              step="0.5"
+                              min="0"
+                              className={`input input-bordered input-xs w-full text-center ${weightError ? "input-error" : ""}`}
+                              placeholder="kg"
+                              value={set.weight_kg || ""}
+                              onChange={(e) =>
+                                handleSetChange(
+                                  blockIndex,
+                                  setIndex,
+                                  "weight_kg",
+                                  Number(e.target.value),
+                                )
+                              }
+                              onBlur={() => touch(weightKey)}
+                              aria-label={`Ciężar w kg, seria ${setIndex + 1}`}
+                              aria-invalid={Boolean(weightError)}
+                              aria-describedby={
+                                weightError ? errorId(weightKey) : undefined
+                              }
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleRemoveSet(blockIndex, setIndex)
+                            }
+                            disabled={block.sets.length === 1}
+                            className="btn btn-ghost btn-xs text-error px-1"
+                            title="Usuń serię"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <div className="pl-13">
+                          <FieldError
+                            id={errorId(repsKey)}
+                            message={repsError}
+                          />
+                          <FieldError
+                            id={errorId(weightKey)}
+                            message={weightError}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
 
                   <button
                     type="button"
-                    onClick={() => handleRemoveExercise(blockIndex)}
-                    disabled={blocks.length === 1}
-                    className="btn btn-ghost btn-xs text-error px-1"
-                    title="Usuń ćwiczenie"
+                    onClick={() => handleAddSet(blockIndex)}
+                    disabled={!block.exercise_id}
+                    className="btn btn-outline btn-xs w-full border-dashed"
                   >
-                    ✕
+                    + Dodaj serię do tego ćwiczenia
                   </button>
                 </div>
-
-                {block.sets.map((set, setIndex) => (
-                  <div
-                    key={setIndex}
-                    className="flex gap-2 items-center pl-1"
-                  >
-                    <span className="text-xs text-base-content/50 w-10 shrink-0">
-                      Seria {setIndex + 1}
-                    </span>
-                    <div className="w-16">
-                      <input
-                        type="number"
-                        min="1"
-                        className="input input-bordered input-xs w-full text-center"
-                        placeholder="Powt."
-                        value={set.reps || ""}
-                        onChange={(e) =>
-                          handleSetChange(
-                            blockIndex,
-                            setIndex,
-                            "reps",
-                            Number(e.target.value),
-                          )
-                        }
-                        required
-                      />
-                    </div>
-                    <div className="w-20">
-                      <input
-                        type="number"
-                        step="0.5"
-                        min="0"
-                        className="input input-bordered input-xs w-full text-center"
-                        placeholder="kg"
-                        value={set.weight_kg || ""}
-                        onChange={(e) =>
-                          handleSetChange(
-                            blockIndex,
-                            setIndex,
-                            "weight_kg",
-                            Number(e.target.value),
-                          )
-                        }
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSet(blockIndex, setIndex)}
-                      disabled={block.sets.length === 1}
-                      className="btn btn-ghost btn-xs text-error px-1"
-                      title="Usuń serię"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={() => handleAddSet(blockIndex)}
-                  disabled={!block.exercise_id}
-                  className="btn btn-outline btn-xs w-full border-dashed"
-                >
-                  + Dodaj serię do tego ćwiczenia
-                </button>
-              </div>
-            ))}
+              );
+            })}
 
             <button
               type="button"
@@ -270,8 +339,11 @@ export default function WorkoutForm({
           <button
             type="submit"
             className="btn btn-primary btn-sm w-full mt-4"
-            disabled={isSubmitting || exercises.length === 0 || !isValid}
+            disabled={isSubmitting}
           >
+            {isSubmitting && (
+              <span className="loading loading-spinner loading-xs" />
+            )}
             {isSubmitting ? "Zapisywanie..." : "Zapisz cały trening"}
           </button>
         </form>

@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { Exercise } from "@/types/workouts";
+import { FieldError } from "@/components/ui/FieldError";
+import { useTouchedFields } from "@/lib/hooks/useTouchedFields";
+import { validateExerciseName } from "@/dashboard/lib/workoutValidation";
 
 const CATEGORIES = [
   { id: "chest", label: "Klatka" },
@@ -22,10 +25,17 @@ export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState<string>(CATEGORIES[0].id);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { touch, shouldShowError, markSubmitted, reset } = useTouchedFields();
+  const fieldId = useId();
+
+  const nameError = validateExerciseName(name);
+  const visibleNameError = shouldShowError("name") ? nameError : undefined;
+  const nameErrorId = `${fieldId}-name-error`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    markSubmitted();
+    if (nameError) return;
 
     try {
       setIsSubmitting(true);
@@ -33,6 +43,7 @@ export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
       if (created) {
         setName("");
         setCategory(CATEGORIES[0].id);
+        reset();
       }
     } finally {
       setIsSubmitting(false);
@@ -47,26 +58,38 @@ export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
           Dodaj ćwiczenie do bazy, potem użyj go w sesji treningowej.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-3 mt-2">
+        <form onSubmit={handleSubmit} noValidate className="space-y-3 mt-2">
           <div>
-            <label className="text-xs font-semibold text-base-content/70">
+            <label
+              htmlFor={`${fieldId}-name`}
+              className="text-xs font-semibold text-base-content/70"
+            >
               Nazwa ćwiczenia
             </label>
             <input
+              id={`${fieldId}-name`}
               type="text"
-              placeholder="np. Hip thrust"
-              className="input input-bordered w-full input-s mt-1"
+              placeholder="np. Przysiad"
+              className={`input input-bordered w-full input-s mt-1 ${visibleNameError ? "input-error" : ""}`}
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onBlur={() => touch("name")}
+              aria-invalid={Boolean(visibleNameError)}
+              aria-describedby={visibleNameError ? nameErrorId : undefined}
               required
             />
+            <FieldError id={nameErrorId} message={visibleNameError} />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-base-content/70">
+            <label
+              htmlFor={`${fieldId}-category`}
+              className="text-xs font-semibold text-base-content/70"
+            >
               Kategoria
             </label>
             <select
+              id={`${fieldId}-category`}
               className="select select-bordered select-s w-full mt-1"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -82,8 +105,11 @@ export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
           <button
             type="submit"
             className="btn btn-outline btn-s w-full"
-            disabled={isSubmitting || !name.trim()}
+            disabled={isSubmitting}
           >
+            {isSubmitting && (
+              <span className="loading loading-spinner loading-xs" />
+            )}
             {isSubmitting ? "Zapisywanie..." : "Dodaj ćwiczenie"}
           </button>
         </form>

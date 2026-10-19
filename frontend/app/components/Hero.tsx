@@ -20,7 +20,7 @@ export default function Hero() {
             <Link href="#projects" className="btn btn-primary">
               Zobacz projekty
             </Link>
-            <Link href="#contact" className="btn btn-ghost border-base-300">
+            <Link href="#contact" className="btn btn-outline border-base-300">
               Skontaktuj się
             </Link>
           </div>

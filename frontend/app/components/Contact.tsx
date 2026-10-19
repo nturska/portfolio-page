@@ -27,7 +27,7 @@ export default function Contact() {
             href="https://github.com/nturska"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-ghost w-full sm:w-auto"
+            className="btn btn-outline w-full sm:w-auto"
           >
             GitHub
           </a>

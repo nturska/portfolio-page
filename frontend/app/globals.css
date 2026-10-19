@@ -1,4 +1,111 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: light --default, dark --prefersdark;
+  themes:
+    light --default,
+    dark --prefersdark;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: false;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: oklch(21% 0.006 56.043);
+  --color-base-200: oklch(37% 0.044 257.287);
+  --color-base-300: oklch(27% 0.041 260.031);
+  --color-base-content: oklch(86% 0.022 252.894);
+  --color-primary: oklch(56.7% 0.05 254.128);
+  --color-primary-content: oklch(96% 0.033 99);
+  --color-secondary: oklch(76.2% 0.058 10.001);
+  --color-secondary-content: oklch(94% 0.028 342.258);
+  --color-accent: oklch(95% 0.045 203.388);
+  --color-accent-content: oklch(52% 0.105 223.128);
+  --color-neutral: oklch(20% 0.042 265.755);
+  --color-neutral-content: oklch(92% 0.004 286.32);
+  --color-info: oklch(66.6% 0.086 229);
+  --color-info-content: oklch(39% 0.07 227.392);
+  --color-success: oklch(72.2% 0.101 131.063);
+  --color-success-content: oklch(98% 0.031 120.757);
+  --color-warning: oklch(69.7% 0.146 84.429);
+  --color-warning-content: oklch(41% 0.112 45.904);
+  --color-error: oklch(60.3% 0.153 5.3);
+  --color-error-content: oklch(33.5% 0.239 12.094);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: true;
+  color-scheme: "light";
+  --color-base-100: oklch(98% 0.022 95.277);
+  --color-base-200: oklch(94.7% 0.022 95.277);
+  --color-base-300: oklch(98% 0.009 95.277);
+  --color-base-content: oklch(21% 0.006 285.885);
+  --color-primary: oklch(40% 0.101 131.063);
+  --color-primary-content: oklch(93% 0.034 272.788);
+  --color-secondary: oklch(31.9% 0.296 77.1);
+  --color-secondary-content: oklch(94% 0.028 342.258);
+  --color-accent: #788176;
+  --color-accent-content: oklch(93% 0.032 255.585);
+  --color-neutral: #8a5b51;
+  --color-neutral-content: oklch(93% 0.034 272.788);
+  --color-info: oklch(82.6% 0.058 254.3);
+  --color-info-content: oklch(29% 0.066 243.157);
+  --color-success: oklch(59.8% 0.161 132.5);
+  --color-success-content: oklch(37% 0.077 168.94);
+  --color-warning: oklch(96% 0.059 95.617);
+  --color-warning-content: oklch(60.3% 0.188 65.1);
+  --color-error: oklch(34.3% 0.194 13.428);
+  --color-error-content: oklch(93% 0.034 272.788);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease,
+    border-color 0.5s ease,
+    fill 0.5s ease,
+    stroke 0.5s ease,
+    box-shadow 0.5s ease !important;
+}
+
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none;
+}
+
+html.has-custom-cursor
+  input:not(
+    [type="checkbox"],
+    [type="radio"],
+    [type="range"],
+    [type="button"],
+    [type="submit"]
+  ),
+html.has-custom-cursor textarea {
+  cursor: text;
+}
+
+.swiper {
+  --swiper-theme-color: var(--color-primary);
+  --swiper-pagination-bullet-inactive-color: var(--color-base-content);
 }

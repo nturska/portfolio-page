@@ -1,10 +1,13 @@
 import { Stats } from "@/types/workouts";
+import { StatsCardsSkeleton } from "@/dashboard/components/skeletons/StatsCardsSkeleton";
 
 interface StatsCardsProps {
   stats: Stats | null;
+  loading: boolean;
 }
 
-export default function StatsCards({ stats }: StatsCardsProps) {
+export default function StatsCards({ stats, loading }: StatsCardsProps) {
+  if (loading) return <StatsCardsSkeleton />;
   if (!stats) return null;
 
   return (

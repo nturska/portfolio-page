@@ -9,16 +9,16 @@ interface Project {
 
 const projects: Project[] = [
   {
-    title: "Habit Tracker Ecosystem",
+    title: "Ekosystem Śledzenia Nawyków",
     description:
       "Aplikacja do śledzenia nawyków. Panel analityczny w Next.js, zasilany API napisanym w FastAPI.",
     tags: ["Next.js", "FastAPI", "PostgreSQL"],
     liveUrl: "/dashboard",
     githubUrl: "https://github.com/nturska/portfolio-page",
-    badge: "Flagship",
+    badge: "Główny projekt",
   },
   {
-    title: "PDF Q&A",
+    title: "PDF Q&A - Pytania o Treść PDF-a",
     description: "Aplikacja wykorzystująca LLM do pytania o treść PDF-a.",
     tags: ["React", "Python", "FastAPI", "LangChain"],
     githubUrl: "https://github.com/nturska/AI-Powered-Document-Q-A-App",
@@ -27,7 +27,7 @@ const projects: Project[] = [
 
 export default function Projects() {
   return (
-    <section id="projects" className="py-20 px-4 md:px-12 bg-base-200/50">
+    <section id="projects" className="py-20 px-4 md:px-12 bg-base-100/50">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -39,13 +39,13 @@ export default function Projects() {
           {projects.map((project, index) => (
             <div
               key={index}
-              className="card bg-base-100 shadow-sm border border-base-200"
+              className="card bg-base-200 shadow-sm border border-base-300 shadow-base-200"
             >
               <div className="card-body">
                 <div className="flex justify-between items-start gap-2">
                   <h3 className="card-title text-xl">{project.title}</h3>
                   {project.badge && (
-                    <span className="badge badge-secondary badge-sm">
+                    <span className="badge badge-accent badge-sm">
                       {project.badge}
                     </span>
                   )}

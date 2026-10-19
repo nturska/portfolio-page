@@ -7,6 +7,7 @@ import StatsCards from "@/dashboard/components/StatsCards";
 import ExerciseForm from "@/dashboard/components/ExerciseForm";
 import WorkoutForm from "@/dashboard/components/WorkoutForm";
 import WorkoutList from "@/dashboard/components/WorkoutList";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const API_URL = (
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
@@ -43,7 +44,8 @@ export default function DashboardClient() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    setLoading(true);
+    // Skeletons only while there is nothing to show yet; refreshes keep stale data visible.
+    if (stats === null) setLoading(true);
     setError(null);
     try {
       const data = await loadDashboard();
@@ -158,12 +160,15 @@ export default function DashboardClient() {
           <div>
             <h1 className="text-2xl font-bold">Workout Analytics Dashboard</h1>
             <p className="text-sm text-base-content/70">
-              Next.js connected to FastAPI
+              Next.js połączony z FastAPI
             </p>
           </div>
-          <Link href="/" className="btn btn-ghost btn-sm">
-            ← Powrót do Portfolio
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="btn btn-ghost btn-sm">
+              ← Powrót do Portfolio
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
 
         {error && (
@@ -178,7 +183,7 @@ export default function DashboardClient() {
           </div>
         )}
 
-        <StatsCards stats={stats} />
+        <StatsCards stats={stats} loading={loading} />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="space-y-6 lg:col-span-7">
