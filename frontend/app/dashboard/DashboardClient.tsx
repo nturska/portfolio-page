@@ -155,9 +155,9 @@ export default function DashboardClient() {
   return (
     <div className="min-h-screen bg-base-200 p-4 md:p-8">
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex justify-between items-center bg-base-100 p-4 rounded-box shadow-sm">
+        <div className="flex flex-col-reverse items-start gap-3 sm:flex-row sm:items-center sm:justify-between bg-base-100 p-4 rounded-box shadow-sm">
           <div>
-            <h1 className="text-2xl font-bold">Workout Analytics Dashboard</h1>
+            <h1 className="text-2xl font-bold">Ekosystem śledzenia nawyków</h1>
             <p className="text-sm text-base-content/70">
               Next.js połączony z FastAPI
             </p>
@@ -167,7 +167,7 @@ export default function DashboardClient() {
               zająć ok. 1 minutę.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
             <Link href="/" className="btn btn-ghost btn-sm">
               ← Powrót do Portfolio
             </Link>
