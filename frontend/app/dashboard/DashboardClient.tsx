@@ -149,6 +149,7 @@ export default function DashboardClient() {
 
   return (
     <div className="min-h-screen bg-base-200 p-4 md:p-8">
+      <LanguageToggle className="fixed bottom-4 right-4" />
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-col-reverse items-start gap-3 sm:flex-row sm:items-center sm:justify-between bg-base-100 p-4 rounded-box shadow-sm">
           <div>
@@ -165,10 +166,7 @@ export default function DashboardClient() {
             <Link href="/" className="btn btn-ghost btn-sm">
               {t("dashboard.back")}
             </Link>
-            <div className="flex items-center gap-2">
-              <LanguageToggle />
-              <ThemeToggle />
-            </div>
+            <ThemeToggle />
           </div>
         </div>
 

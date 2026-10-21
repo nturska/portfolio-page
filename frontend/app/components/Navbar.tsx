@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { cv } from "../../public";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { LanguageToggle } from "@/components/ui/LanguageToggle";
 import { useLocale } from "@/lib/hooks/useLocale";
 
 export default function Navbar() {
@@ -38,7 +37,6 @@ export default function Navbar() {
             <Link href="#contact">{t("nav.contact")}</Link>
           </li>
         </ul>
-        <LanguageToggle />
         <ThemeToggle />
         <a
           href={cv}
