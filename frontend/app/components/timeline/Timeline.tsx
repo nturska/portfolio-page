@@ -2,10 +2,12 @@
 
 import { useRef } from "react";
 import { MotionConfig, motion, useScroll, useSpring } from "motion/react";
+import { useLocale } from "@/lib/hooks/useLocale";
 import { TimelineItem } from "./TimelineItem";
 import { timelineEntries } from "./timelineData";
 
 export const Timeline = () => {
+  const { t } = useLocale();
   const listRef = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({
     target: listRef,
@@ -23,11 +25,9 @@ export const Timeline = () => {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Moja ścieżka
+              {t("timeline.title")}
             </h2>
-            <p className="text-base-content/70">
-              Edukacja, praca i projekty, które mnie ukształtowały.
-            </p>
+            <p className="text-base-content/70">{t("timeline.subtitle")}</p>
           </div>
 
           <div className="relative">

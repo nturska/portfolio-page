@@ -8,47 +8,52 @@ export type ExerciseBlock = {
   sets: SetRow[];
 };
 
+export type ValidationCode =
+  | "exerciseNameRequired"
+  | "exerciseNameMin"
+  | "sessionTitleRequired"
+  | "exerciseRequired"
+  | "repsMin"
+  | "weightNegative";
+
 export type SetErrors = {
-  reps?: string;
-  weight_kg?: string;
+  reps?: ValidationCode;
+  weight_kg?: ValidationCode;
 };
 
 export type BlockErrors = {
-  exercise?: string;
+  exercise?: ValidationCode;
   sets: SetErrors[];
 };
 
 export type WorkoutFormErrors = {
-  title?: string;
+  title?: ValidationCode;
   blocks: BlockErrors[];
 };
 
-const EXERCISE_NAME_MIN_LENGTH = 2;
+export const EXERCISE_NAME_MIN_LENGTH = 2;
 
-export const validateExerciseName = (name: string): string | undefined => {
+export const validateExerciseName = (
+  name: string,
+): ValidationCode | undefined => {
   const trimmed = name.trim();
-  if (!trimmed) return "Podaj nazwę ćwiczenia.";
-  if (trimmed.length < EXERCISE_NAME_MIN_LENGTH) {
-    return `Nazwa musi mieć co najmniej ${EXERCISE_NAME_MIN_LENGTH} znaki.`;
-  }
+  if (!trimmed) return "exerciseNameRequired";
+  if (trimmed.length < EXERCISE_NAME_MIN_LENGTH) return "exerciseNameMin";
   return undefined;
 };
 
 const validateSet = (set: SetRow): SetErrors => ({
-  reps:
-    !Number.isInteger(set.reps) || set.reps < 1
-      ? "Podaj liczbę powtórzeń (min. 1)."
-      : undefined,
-  weight_kg: set.weight_kg < 0 ? "Ciężar nie może być ujemny." : undefined,
+  reps: !Number.isInteger(set.reps) || set.reps < 1 ? "repsMin" : undefined,
+  weight_kg: set.weight_kg < 0 ? "weightNegative" : undefined,
 });
 
 export const validateWorkout = (
   title: string,
   blocks: ExerciseBlock[],
 ): WorkoutFormErrors => ({
-  title: title.trim() ? undefined : "Podaj nazwę sesji.",
+  title: title.trim() ? undefined : "sessionTitleRequired",
   blocks: blocks.map((block) => ({
-    exercise: block.exercise_id > 0 ? undefined : "Wybierz ćwiczenie z listy.",
+    exercise: block.exercise_id > 0 ? undefined : "exerciseRequired",
     sets: block.sets.map(validateSet),
   })),
 });

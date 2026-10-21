@@ -1,3 +1,7 @@
+"use client";
+
+import { useLocale } from "@/lib/hooks/useLocale";
+import { localized } from "@/lib/i18n";
 import type { Certificate, CertificateAccent } from "./types";
 
 type CertificateCardProps = Pick<
@@ -19,6 +23,8 @@ export const CertificateCard = ({
   pdfUrl,
   accent,
 }: CertificateCardProps) => {
+  const { locale, t } = useLocale();
+
   return (
     <article
       className={`flex aspect-3/4 flex-col justify-between rounded-box bg-linear-to-br p-6 shadow-xl ${ACCENT_STYLES[accent]}`}
@@ -44,7 +50,9 @@ export const CertificateCard = ({
           {issuer}
           {year && ` · ${year}`}
         </p>
-        <h3 className="text-xl font-bold leading-tight">{title}</h3>
+        <h3 className="text-xl font-bold leading-tight">
+          {localized(title, locale)}
+        </h3>
       </div>
 
       <a
@@ -53,7 +61,7 @@ export const CertificateCard = ({
         rel="noopener noreferrer"
         className="btn btn-sm border-none bg-base-100/90 text-base-content hover:bg-base-100"
       >
-        Zobacz PDF
+        {t("certificates.viewPdf")}
       </a>
     </article>
   );

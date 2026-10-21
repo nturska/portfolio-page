@@ -3,16 +3,14 @@
 import { useId, useState } from "react";
 import type { Exercise } from "@/types/workouts";
 import { FieldError } from "@/components/ui/FieldError";
+import { useLocale } from "@/lib/hooks/useLocale";
 import { useTouchedFields } from "@/lib/hooks/useTouchedFields";
-import { validateExerciseName } from "@/dashboard/lib/workoutValidation";
+import {
+  EXERCISE_NAME_MIN_LENGTH,
+  validateExerciseName,
+} from "@/dashboard/lib/workoutValidation";
 
-const CATEGORIES = [
-  { id: "chest", label: "Klatka" },
-  { id: "back", label: "Plecy" },
-  { id: "legs", label: "Nogi" },
-  { id: "arms", label: "Ręce / Ramiona" },
-  { id: "abs", label: "Brzuch" },
-] as const;
+const CATEGORY_IDS = ["chest", "back", "legs", "arms", "abs"] as const;
 
 type ExerciseFormProps = {
   onCreateExercise: (
@@ -22,27 +20,34 @@ type ExerciseFormProps = {
 };
 
 export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
+  const { t } = useLocale();
   const [name, setName] = useState("");
-  const [category, setCategory] = useState<string>(CATEGORIES[0].id);
+  const [category, setCategory] = useState<string>(CATEGORY_IDS[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { touch, shouldShowError, markSubmitted, reset } = useTouchedFields();
   const fieldId = useId();
 
-  const nameError = validateExerciseName(name);
+  const nameErrorCode = validateExerciseName(name);
+  const nameError =
+    nameErrorCode === "exerciseNameMin"
+      ? t("validation.exerciseNameMin", { min: EXERCISE_NAME_MIN_LENGTH })
+      : nameErrorCode
+        ? t(`validation.${nameErrorCode}`)
+        : undefined;
   const visibleNameError = shouldShowError("name") ? nameError : undefined;
   const nameErrorId = `${fieldId}-name-error`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     markSubmitted();
-    if (nameError) return;
+    if (nameErrorCode) return;
 
     try {
       setIsSubmitting(true);
       const created = await onCreateExercise(name.trim(), category);
       if (created) {
         setName("");
-        setCategory(CATEGORIES[0].id);
+        setCategory(CATEGORY_IDS[0]);
         reset();
       }
     } finally {
@@ -53,9 +58,11 @@ export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
   return (
     <div className="card bg-base-100 shadow-sm border border-base-200">
       <div className="card-body p-5">
-        <h2 className="card-title text-lg font-bold">Nowe ćwiczenie</h2>
+        <h2 className="card-title text-lg font-bold">
+          {t("dashboard.newExercise")}
+        </h2>
         <p className="text-xs text-base-content/60 -mt-1">
-          Dodaj ćwiczenie do bazy, potem użyj go w sesji treningowej.
+          {t("dashboard.newExerciseHint")}
         </p>
 
         <form onSubmit={handleSubmit} noValidate className="space-y-3 mt-2">
@@ -64,12 +71,12 @@ export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
               htmlFor={`${fieldId}-name`}
               className="text-xs font-semibold text-base-content/70"
             >
-              Nazwa ćwiczenia
+              {t("dashboard.exerciseName")}
             </label>
             <input
               id={`${fieldId}-name`}
               type="text"
-              placeholder="np. Przysiad"
+              placeholder={t("dashboard.exerciseNamePlaceholder")}
               className={`input input-bordered w-full input-s mt-1 ${visibleNameError ? "input-error" : ""}`}
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -86,7 +93,7 @@ export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
               htmlFor={`${fieldId}-category`}
               className="text-xs font-semibold text-base-content/70"
             >
-              Kategoria
+              {t("dashboard.category")}
             </label>
             <select
               id={`${fieldId}-category`}
@@ -94,9 +101,9 @@ export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              {CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.label}
+              {CATEGORY_IDS.map((id) => (
+                <option key={id} value={id}>
+                  {t(`dashboard.categories.${id}`)}
                 </option>
               ))}
             </select>
@@ -110,7 +117,7 @@ export default function ExerciseForm({ onCreateExercise }: ExerciseFormProps) {
             {isSubmitting && (
               <span className="loading loading-spinner loading-xs" />
             )}
-            {isSubmitting ? "Zapisywanie..." : "Dodaj ćwiczenie"}
+            {isSubmitting ? t("dashboard.saving") : t("dashboard.addExercise")}
           </button>
         </form>
       </div>

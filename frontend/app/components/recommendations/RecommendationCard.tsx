@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useLocale } from "@/lib/hooks/useLocale";
 import type { Recommendation } from "./types";
 
 type RecommendationCardProps = {
@@ -23,6 +24,7 @@ export const RecommendationCard = ({
   displayedQuote,
   isTyping,
 }: RecommendationCardProps) => {
+  const { t } = useLocale();
   const [photoFailed, setPhotoFailed] = useState(false);
   const showPhoto = Boolean(recommendation.photoUrl) && !photoFailed;
 
@@ -39,7 +41,9 @@ export const RecommendationCard = ({
         href={recommendation.linkedInUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`Profil LinkedIn: ${recommendation.name}`}
+        aria-label={t("recommendations.linkedInProfile", {
+          name: recommendation.name,
+        })}
         className="btn btn-ghost btn-circle btn-sm absolute top-4 right-4 text-primary"
       >
         <svg

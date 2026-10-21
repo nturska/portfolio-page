@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ExerciseSet, Workout } from "@/types/workouts";
 import { WorkoutCardSkeleton } from "@/dashboard/components/skeletons/WorkoutCardSkeleton";
+import { useLocale } from "@/lib/hooks/useLocale";
 
 const SKELETON_COUNT = 3;
 
@@ -44,21 +45,34 @@ function groupSetsByExercise(sets: ExerciseSet[]): GroupedExercise[] {
   return Array.from(groups.values());
 }
 
-function formatLoadSummary(sets: ExerciseSet[]): string {
+type Translate = ReturnType<
+  typeof import("@/lib/hooks/useLocale").useLocale
+>["t"];
+
+function formatLoadSummary(sets: ExerciseSet[], t: Translate): string {
   const unique = new Set(sets.map((s) => `${s.reps}×${s.weight_kg}`));
 
   if (unique.size === 1) {
     const first = sets[0];
-    return `${first.reps} powt. × ${first.weight_kg} kg`;
+    return t("dashboard.loadSame", {
+      reps: first.reps,
+      kg: first.weight_kg,
+    });
   }
 
   return sets.map((s) => `${s.reps}×${s.weight_kg}kg`).join(", ");
 }
 
-function setCountLabel(count: number): string {
-  if (count === 1) return "1 seria";
-  if (count >= 2 && count <= 4) return `${count} serie`;
-  return `${count} serii`;
+function setCountLabel(count: number, t: Translate): string {
+  if (count === 1) return t("dashboard.setsOne");
+  if (count >= 2 && count <= 4) return t("dashboard.setsFew", { count });
+  return t("dashboard.setsMany", { count });
+}
+
+const CATEGORY_IDS = ["chest", "back", "legs", "arms", "abs"] as const;
+
+function isCategoryId(value: string): value is (typeof CATEGORY_IDS)[number] {
+  return (CATEGORY_IDS as readonly string[]).includes(value);
 }
 
 export default function WorkoutList({
@@ -66,6 +80,7 @@ export default function WorkoutList({
   loading,
   onDelete,
 }: WorkoutListProps) {
+  const { t } = useLocale();
   const [deletingIds, setDeletingIds] = useState<ReadonlySet<number>>(
     () => new Set(),
   );
@@ -85,18 +100,18 @@ export default function WorkoutList({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">Historia sesji</h2>
+      <h2 className="text-xl font-bold">{t("dashboard.history")}</h2>
 
       {loading ? (
         <div className="space-y-4" aria-busy="true">
-          <span className="sr-only">Ładowanie treningów…</span>
+          <span className="sr-only">{t("dashboard.loadingWorkouts")}</span>
           {Array.from({ length: SKELETON_COUNT }, (_, i) => (
             <WorkoutCardSkeleton key={i} rows={i === 0 ? 3 : 2} />
           ))}
         </div>
       ) : workouts.length === 0 ? (
         <div className="card bg-base-100 p-8 text-center text-base-content/60 border border-base-200">
-          Brak zapisanych treningów. Skomponuj pierwszy zestaw po lewej stronie!
+          {t("dashboard.emptyHistory")}
         </div>
       ) : (
         workouts.map((w) => {
@@ -127,7 +142,9 @@ export default function WorkoutList({
                     {isDeleting && (
                       <span className="loading loading-spinner loading-xs" />
                     )}
-                    {isDeleting ? "Usuwanie..." : "Usuń"}
+                    {isDeleting
+                      ? t("dashboard.deleting")
+                      : t("dashboard.delete")}
                   </button>
                 </div>
 
@@ -144,14 +161,16 @@ export default function WorkoutList({
                           {group.name}
                         </span>
                         <span className="badge badge-outline badge-xs uppercase font-mono shrink-0">
-                          {group.category}
+                          {isCategoryId(group.category)
+                            ? t(`dashboard.categories.${group.category}`)
+                            : group.category}
                         </span>
                         <span className="badge badge-ghost badge-xs shrink-0">
-                          {setCountLabel(group.setCount)}
+                          {setCountLabel(group.setCount, t)}
                         </span>
                       </div>
                       <span className="badge badge-sm badge-neutral shrink-0 max-w-[50%] truncate">
-                        {formatLoadSummary(group.sets)}
+                        {formatLoadSummary(group.sets, t)}
                       </span>
                     </div>
                   ))}

@@ -1,11 +1,13 @@
+import type { LocalizedText } from "@/lib/i18n";
+
 export type TimelineKind = "education" | "work" | "project";
 
 export interface TimelineEntry {
   id: string;
   date: string;
-  title: string;
-  place?: string;
-  description: string;
+  title: LocalizedText;
+  place?: LocalizedText;
+  description: LocalizedText;
   kind: TimelineKind;
 }
 

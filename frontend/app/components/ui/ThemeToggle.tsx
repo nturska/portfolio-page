@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "@/lib/hooks/useTheme";
+import { useLocale } from "@/lib/hooks/useLocale";
 
 type ThemeToggleProps = {
   className?: string;
@@ -8,13 +9,14 @@ type ThemeToggleProps = {
 
 export const ThemeToggle = ({ className = "" }: ThemeToggleProps) => {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLocale();
   const isDark = theme === "dark";
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      aria-label={isDark ? "Włącz jasny motyw" : "Włącz ciemny motyw"}
+      aria-label={isDark ? t("theme.light") : t("theme.dark")}
       aria-pressed={isDark}
       className={`btn btn-ghost btn-circle btn-sm ${className}`}
     >

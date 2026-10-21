@@ -1,10 +1,13 @@
 "use client";
 
 import { MotionConfig, motion } from "motion/react";
+import { useLocale } from "@/lib/hooks/useLocale";
 import { RecommendationsCarousel } from "./RecommendationsCarousel";
 import { recommendations } from "./recommendationsData";
 
 export const Recommendations = () => {
+  const { t } = useLocale();
+
   return (
     <MotionConfig reducedMotion="user">
       <section
@@ -20,10 +23,10 @@ export const Recommendations = () => {
         >
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Rekomendacje
+              {t("recommendations.title")}
             </h2>
             <p className="text-base-content/70">
-              Opinie z LinkedIn od osób, z którymi pracowałam.
+              {t("recommendations.subtitle")}
             </p>
           </div>
 

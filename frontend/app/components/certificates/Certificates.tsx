@@ -1,10 +1,13 @@
 "use client";
 
 import { MotionConfig, motion } from "motion/react";
+import { useLocale } from "@/lib/hooks/useLocale";
 import { CertificatesCarousel } from "./CertificatesCarousel";
 import { certificates } from "./certificatesData";
 
 export const Certificates = () => {
+  const { t } = useLocale();
+
   return (
     <MotionConfig reducedMotion="user">
       <section
@@ -19,11 +22,10 @@ export const Certificates = () => {
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Certyfikaty</h2>
-            <p className="text-base-content/70">
-              Przeciągnij karty myszką lub palcem, albo użyj strzałek na
-              klawiaturze.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              {t("certificates.title")}
+            </h2>
+            <p className="text-base-content/70">{t("certificates.subtitle")}</p>
           </div>
 
           <CertificatesCarousel items={certificates} />

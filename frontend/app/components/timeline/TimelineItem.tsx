@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
+import { useLocale } from "@/lib/hooks/useLocale";
+import { localized } from "@/lib/i18n";
 import type { TimelineEntry, TimelineKind, TimelineSide } from "./types";
 
 type TimelineItemProps = {
@@ -8,13 +10,10 @@ type TimelineItemProps = {
   side: TimelineSide;
 };
 
-const KIND_STYLES: Record<
-  TimelineKind,
-  { dot: string; badge: string; label: string }
-> = {
-  education: { dot: "bg-primary", badge: "badge-primary", label: "Edukacja" },
-  work: { dot: "bg-secondary", badge: "badge-secondary", label: "Praca" },
-  project: { dot: "bg-accent", badge: "badge-accent", label: "Projekt" },
+const KIND_STYLES: Record<TimelineKind, { dot: string; badge: string }> = {
+  education: { dot: "bg-primary", badge: "badge-primary" },
+  work: { dot: "bg-secondary", badge: "badge-secondary" },
+  project: { dot: "bg-accent", badge: "badge-accent" },
 };
 
 const SIDE_STYLES: Record<TimelineSide, { item: string; dot: string }> = {
@@ -29,8 +28,10 @@ const SIDE_STYLES: Record<TimelineSide, { item: string; dot: string }> = {
 };
 
 export const TimelineItem = ({ entry, side }: TimelineItemProps) => {
+  const { locale, t } = useLocale();
   const kind = KIND_STYLES[entry.kind];
   const sideStyles = SIDE_STYLES[side];
+  const kindLabel = t(`timeline.kind.${entry.kind}`);
 
   return (
     <motion.li
@@ -53,15 +54,19 @@ export const TimelineItem = ({ entry, side }: TimelineItemProps) => {
               {entry.date}
             </span>
             <span className={`badge badge-sm badge-soft ${kind.badge}`}>
-              {kind.label}
+              {kindLabel}
             </span>
           </div>
-          <h3 className="text-lg font-bold">{entry.title}</h3>
+          <h3 className="text-lg font-bold">
+            {localized(entry.title, locale)}
+          </h3>
           {entry.place && (
-            <p className="text-sm font-medium text-primary">{entry.place}</p>
+            <p className="text-sm font-medium text-primary">
+              {localized(entry.place, locale)}
+            </p>
           )}
           <p className="text-sm text-base-content/80 leading-relaxed whitespace-pre-line">
-            {entry.description}
+            {localized(entry.description, locale)}
           </p>
         </div>
       </div>

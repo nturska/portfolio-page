@@ -5,6 +5,7 @@ import { A11y, EffectCoverflow, Keyboard, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
+import { useLocale } from "@/lib/hooks/useLocale";
 import { CertificateCard } from "./CertificateCard";
 import type { Certificate } from "./types";
 
@@ -13,6 +14,8 @@ type CertificatesCarouselProps = {
 };
 
 export const CertificatesCarousel = ({ items }: CertificatesCarouselProps) => {
+  const { locale, t } = useLocale();
+
   return (
     <Swiper
       modules={[EffectCoverflow, Pagination, Keyboard, A11y]}
@@ -25,9 +28,9 @@ export const CertificatesCarousel = ({ items }: CertificatesCarouselProps) => {
       keyboard={{ enabled: true }}
       pagination={{ clickable: true }}
       a11y={{
-        prevSlideMessage: "Poprzedni certyfikat",
-        nextSlideMessage: "Następny certyfikat",
-        paginationBulletMessage: "Przejdź do certyfikatu {{index}}",
+        prevSlideMessage: t("certificates.prev"),
+        nextSlideMessage: t("certificates.next"),
+        paginationBulletMessage: t("certificates.bullet"),
       }}
       coverflowEffect={{
         rotate: 30,
@@ -36,6 +39,7 @@ export const CertificatesCarousel = ({ items }: CertificatesCarouselProps) => {
         modifier: 1,
         slideShadows: false,
       }}
+      key={locale}
       className="pb-12!"
     >
       {items.map((item) => (

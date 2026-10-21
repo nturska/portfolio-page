@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
+import { useLocale } from "@/lib/hooks/useLocale";
 import { useTypewriter } from "@/lib/hooks/useTypewriter";
 import { RecommendationCard } from "./RecommendationCard";
 import type { Recommendation } from "./types";
@@ -51,6 +52,7 @@ const ActiveRecommendation = ({
 export const RecommendationsCarousel = ({
   items,
 }: RecommendationsCarouselProps) => {
+  const { t } = useLocale();
   const prefersReducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
@@ -116,7 +118,7 @@ export const RecommendationsCarousel = ({
               type="button"
               role="tab"
               aria-selected={isActive}
-              aria-label={`Rekomendacja: ${item.name}`}
+              aria-label={t("recommendations.tab", { name: item.name })}
               className={`h-2.5 rounded-full transition-[width,background-color] duration-300 ${
                 isActive ? "w-8 bg-primary" : "w-2.5 bg-base-content/30"
               }`}

@@ -8,6 +8,8 @@ import ExerciseForm from "@/dashboard/components/ExerciseForm";
 import WorkoutForm from "@/dashboard/components/WorkoutForm";
 import WorkoutList from "@/dashboard/components/WorkoutList";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { LanguageToggle } from "@/components/ui/LanguageToggle";
+import { useLocale } from "@/lib/hooks/useLocale";
 
 const API_URL = (
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
@@ -37,6 +39,7 @@ async function loadDashboard(): Promise<{
 }
 
 export default function DashboardClient() {
+  const { t } = useLocale();
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -53,11 +56,7 @@ export default function DashboardClient() {
       setExercises(data.exercises);
     } catch (err) {
       console.error("Błąd pobierania danych:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Nie udało się połączyć z API (cold start Rendera?)",
-      );
+      setError("connect");
     } finally {
       setLoading(false);
     }
@@ -77,11 +76,7 @@ export default function DashboardClient() {
       } catch (err) {
         if (cancelled) return;
         console.error("Błąd pobierania danych:", err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Nie udało się połączyć z API (cold start Rendera?)",
-        );
+        setError("connect");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -157,32 +152,31 @@ export default function DashboardClient() {
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-col-reverse items-start gap-3 sm:flex-row sm:items-center sm:justify-between bg-base-100 p-4 rounded-box shadow-sm">
           <div>
-            <h1 className="text-2xl font-bold">Ekosystem śledzenia nawyków</h1>
+            <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
             <p className="text-sm text-base-content/70">
-              Next.js połączony z FastAPI
+              {t("dashboard.subtitle")}
             </p>
             <p className="text-sm text-secondary/70">
-              <span className="font-bold">Uwaga:</span> Aplikacja jest
-              obsługiwana na darmowym Renderze, więc pierwsze uruchomienie może
-              zająć ok. 1 minutę.
+              <span className="font-bold">{t("dashboard.noticeLabel")}</span>{" "}
+              {t("dashboard.notice")}
             </p>
           </div>
           <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
             <Link href="/" className="btn btn-ghost btn-sm">
-              ← Powrót do Portfolio
+              {t("dashboard.back")}
             </Link>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <ThemeToggle />
+            </div>
           </div>
         </div>
 
         {error && (
           <div className="alert alert-warning">
-            <span>
-              {error}. Na darmowym Renderze pierwsze uruchomienie może zająć ok.
-              minutę.
-            </span>
+            <span>{t("dashboard.error")}</span>
             <button type="button" className="btn btn-sm" onClick={fetchData}>
-              Spróbuj ponownie
+              {t("dashboard.retry")}
             </button>
           </div>
         )}

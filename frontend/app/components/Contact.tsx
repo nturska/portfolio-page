@@ -1,19 +1,24 @@
+"use client";
+
+import { useLocale } from "@/lib/hooks/useLocale";
+
 export default function Contact() {
+  const { t } = useLocale();
+
   return (
     <section id="contact" className="py-20 px-4 md:px-12 bg-base-100">
       <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">Porozmawiajmy</h2>
-        <p className="text-base-content/70 mb-8">
-          Szukam możliwości pracy jako Frontend Developer przy projektach React
-          i Next.js.
-        </p>
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          {t("contact.title")}
+        </h2>
+        <p className="text-base-content/70 mb-8">{t("contact.subtitle")}</p>
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           <a
             href="mailto:nataliaturska2@gmail.com"
             className="btn btn-primary w-full sm:w-auto"
           >
-            Napisz e-mail
+            {t("contact.email")}
           </a>
           <a
             href="https://www.linkedin.com/in/natalia-turska-102559184/"

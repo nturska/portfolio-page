@@ -3,12 +3,14 @@
 import { useId, useState } from "react";
 import type { Exercise } from "@/types/workouts";
 import { FieldError } from "@/components/ui/FieldError";
+import { useLocale } from "@/lib/hooks/useLocale";
 import { useTouchedFields } from "@/lib/hooks/useTouchedFields";
 import {
   hasWorkoutErrors,
   validateWorkout,
   type ExerciseBlock,
   type SetRow,
+  type ValidationCode,
 } from "@/dashboard/lib/workoutValidation";
 
 type FlatSet = {
@@ -36,14 +38,17 @@ export default function WorkoutForm({
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState<ExerciseBlock[]>([emptyExerciseBlock()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useLocale();
   const { touch, shouldShowError, markSubmitted, reset } = useTouchedFields();
   const fieldId = useId();
 
   const errors = validateWorkout(title, blocks);
+  const translateCode = (code?: ValidationCode): string | undefined =>
+    code ? t(`validation.${code}`) : undefined;
   const visibleError = (key: string, message?: string): string | undefined =>
     shouldShowError(key) ? message : undefined;
   const errorId = (key: string): string => `${fieldId}-${key}-error`;
-  const titleError = visibleError("title", errors.title);
+  const titleError = visibleError("title", translateCode(errors.title));
 
   const handleAddExercise = () => {
     setBlocks((prev) => [...prev, emptyExerciseBlock()]);
@@ -135,7 +140,9 @@ export default function WorkoutForm({
   return (
     <div className="card bg-base-100 shadow-sm border border-base-200">
       <div className="card-body p-5">
-        <h2 className="card-title text-lg font-bold">Nowa sesja treningowa</h2>
+        <h2 className="card-title text-lg font-bold">
+          {t("dashboard.newSession")}
+        </h2>
 
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div>
@@ -143,12 +150,12 @@ export default function WorkoutForm({
               htmlFor={`${fieldId}-title`}
               className="text-xs font-semibold text-base-content/70"
             >
-              Nazwa sesji
+              {t("dashboard.sessionName")}
             </label>
             <input
               id={`${fieldId}-title`}
               type="text"
-              placeholder="np. Trening nóg"
+              placeholder={t("dashboard.sessionNamePlaceholder")}
               className={`input input-bordered w-full input-sm mt-1 ${titleError ? "input-error" : ""}`}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -162,7 +169,7 @@ export default function WorkoutForm({
 
           <div className="space-y-4">
             <label className="text-xs font-semibold text-base-content/70">
-              Ćwiczenia i serie
+              {t("dashboard.exercisesAndSets")}
             </label>
 
             {blocks.map((block, blockIndex) => {
@@ -171,8 +178,8 @@ export default function WorkoutForm({
               const exerciseError = visibleError(
                 exerciseKey,
                 exercises.length === 0
-                  ? "Najpierw dodaj ćwiczenie w formularzu powyżej."
-                  : blockErrors.exercise,
+                  ? t("validation.noExercises")
+                  : translateCode(blockErrors.exercise),
               );
 
               return (
@@ -192,7 +199,9 @@ export default function WorkoutForm({
                           )
                         }
                         onBlur={() => touch(exerciseKey)}
-                        aria-label={`Ćwiczenie ${blockIndex + 1}`}
+                        aria-label={t("dashboard.exerciseN", {
+                          n: blockIndex + 1,
+                        })}
                         aria-invalid={Boolean(exerciseError)}
                         aria-describedby={
                           exerciseError ? errorId(exerciseKey) : undefined
@@ -200,7 +209,7 @@ export default function WorkoutForm({
                         required
                       >
                         <option value="" disabled>
-                          Wybierz ćwiczenie…
+                          {t("dashboard.chooseExercise")}
                         </option>
                         {exercises.map((ex) => (
                           <option key={ex.id} value={ex.id}>
@@ -214,7 +223,7 @@ export default function WorkoutForm({
                         onClick={() => handleRemoveExercise(blockIndex)}
                         disabled={blocks.length === 1}
                         className="btn btn-ghost btn-xs text-error px-1"
-                        title="Usuń ćwiczenie"
+                        title={t("dashboard.removeExercise")}
                       >
                         ✕
                       </button>
@@ -229,24 +238,27 @@ export default function WorkoutForm({
                     const setErrors = blockErrors.sets[setIndex];
                     const repsKey = `b${blockIndex}-s${setIndex}-reps`;
                     const weightKey = `b${blockIndex}-s${setIndex}-weight`;
-                    const repsError = visibleError(repsKey, setErrors.reps);
+                    const repsError = visibleError(
+                      repsKey,
+                      translateCode(setErrors.reps),
+                    );
                     const weightError = visibleError(
                       weightKey,
-                      setErrors.weight_kg,
+                      translateCode(setErrors.weight_kg),
                     );
 
                     return (
                       <div key={setIndex}>
                         <div className="flex gap-2 items-center pl-1">
                           <span className="text-xs text-base-content/50 w-10 shrink-0">
-                            Seria {setIndex + 1}
+                            {t("dashboard.setN", { n: setIndex + 1 })}
                           </span>
                           <div className="w-16">
                             <input
                               type="number"
                               min="1"
                               className={`input input-bordered input-xs w-full text-center ${repsError ? "input-error" : ""}`}
-                              placeholder="Powt."
+                              placeholder={t("dashboard.repsPlaceholder")}
                               value={set.reps || ""}
                               onChange={(e) =>
                                 handleSetChange(
@@ -257,7 +269,9 @@ export default function WorkoutForm({
                                 )
                               }
                               onBlur={() => touch(repsKey)}
-                              aria-label={`Powtórzenia, seria ${setIndex + 1}`}
+                              aria-label={t("dashboard.repsAria", {
+                                n: setIndex + 1,
+                              })}
                               aria-invalid={Boolean(repsError)}
                               aria-describedby={
                                 repsError ? errorId(repsKey) : undefined
@@ -282,7 +296,9 @@ export default function WorkoutForm({
                                 )
                               }
                               onBlur={() => touch(weightKey)}
-                              aria-label={`Ciężar w kg, seria ${setIndex + 1}`}
+                              aria-label={t("dashboard.weightAria", {
+                                n: setIndex + 1,
+                              })}
                               aria-invalid={Boolean(weightError)}
                               aria-describedby={
                                 weightError ? errorId(weightKey) : undefined
@@ -296,7 +312,7 @@ export default function WorkoutForm({
                             }
                             disabled={block.sets.length === 1}
                             className="btn btn-ghost btn-xs text-error px-1"
-                            title="Usuń serię"
+                            title={t("dashboard.removeSet")}
                           >
                             ✕
                           </button>
@@ -321,7 +337,7 @@ export default function WorkoutForm({
                     disabled={!block.exercise_id}
                     className="btn btn-outline btn-xs w-full border-dashed"
                   >
-                    + Dodaj serię do tego ćwiczenia
+                    {t("dashboard.addSet")}
                   </button>
                 </div>
               );
@@ -332,7 +348,7 @@ export default function WorkoutForm({
               onClick={handleAddExercise}
               className="btn btn-outline btn-sm w-full"
             >
-              + Dodaj kolejne ćwiczenie
+              {t("dashboard.addExerciseBlock")}
             </button>
           </div>
 
@@ -344,7 +360,9 @@ export default function WorkoutForm({
             {isSubmitting && (
               <span className="loading loading-spinner loading-xs" />
             )}
-            {isSubmitting ? "Zapisywanie..." : "Zapisz cały trening"}
+            {isSubmitting
+              ? t("dashboard.saving")
+              : t("dashboard.saveWorkout")}
           </button>
         </form>
       </div>
